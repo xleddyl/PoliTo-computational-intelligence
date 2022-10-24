@@ -16,9 +16,9 @@ and that the total numbers of elements in all $L_{s_i}$ is minimum.
 
 To solve this problem I've choosen A\* with
 
-- `priority_function = lambda s: state_cost[s] + h(s)`
-- `unit_cost = lambda a: 1`
-- `h(n) = len(GOAL - state) & (N - len(state))`
+- `priority_function = lambda state: state_cost[state] + h(state)`
+- `h(state) = (N - len(state))`
+- `unit_cost = lambda state, action: len(state & action)`
 
 ---
 
@@ -31,18 +31,20 @@ def possible_actions(state):
     return (State(set(m)) for m in MOVES if check_opt(state, m))
 
 def check_opt(state, m):
-    return (list(m) > list(state._data))
+    return not (list(m) <= list(state._data))
 ```
 
 ---
 
 ## Some results
 
+(Using unit `cost = 1`)
+
 | N    | steps | visited |
 | ---- | ----- | ------- |
-| 5    | 3     | 20      |
-| 10   | 4     | 23      |
-| 20   | 5     | 88      |
-| 100  | 6     | 927     |
-| 500  |       |         |
-| 1000 |       |         |
+| 5    | 3     | 19      |
+| 10   | 3     | 63      |
+| 20   | 4     | 73      |
+| 100  | 5     | 1.573    |
+| 500  | 7     | 10.758   |
+| 1000 | 9     | 18.961   |
