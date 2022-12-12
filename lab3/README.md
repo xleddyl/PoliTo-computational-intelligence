@@ -1,30 +1,56 @@
 # Lab 3: Policy Search
 
-- lab did with [AleTola](https://github.com/AleTola)
+## 3.1 - Fixed rules
 
-## Task
+The **Fixed rules agent** consists of the following two parts:
 
-Write agents able to play Nim, with an arbitrary number of rows and an upper bound  on the number of objects that can be removed in a turn (a.k.a., subtraction game).
+### 1. Main strategy
 
-The player taking the last object wins.
+A simple approach to the game that consider only two possible states:
 
-- Task3.1: An agent using fixed rules based on nim-sum (i.e., an expert system)
+- Number of _remaining rows is even_
 
-- Task3.2: An agent using evolved rules
+  - In this case the agent takes only `1` item from the row with the highest number of items
 
-# My approach
+- Number of _remaining rows is odd_
+  - In this case the agent takes all the item from the row with the highest number of items
 
-In my approach I have implemeneted 5 simple strategies using the data about the "state" of the board in each moment the startegy has to be used (_shortest row_, _longest row_, _active number of objescts_).
+### 2. Endgame strategy
 
-In these 5 startegies I have inserted a probability "p" that have to be tuned by the Evolution Algorithm in order to achieve the maximum fitness possible.
+When the board has only `3` rows left, the _endgame strategy_ is adopted.
 
-The fitness function calculate the "winrate" taking into account 4 matches versus 4 different strategies:
+This strategy consists in counting how many rows containing `1` item are left and, if there is only one, clear it by removing the last item. This prevents that the strategy of removing all the items from the row with the highest number of items, leaves the board in a state that will favor the opponent.
 
-- _PURE RANDOM_ : we choose a random row and a random number of objects to remove from that row
-- _DUMB_ : remove always only one object from the longest row
-- _GOOD_ : remove all the objects from the longest row
-- _OPTIMAL_ : the nim-sum
+Example:
 
-A mutation consists in increasing or decreasing (depending on the mutation rate m1) the probability associated to the strategy of the individual subjected to the mutation.
+```text
+ |
+| |  agent wipes max row  ->   |
+| |                           | |
+the opponent can now take 1 item from the row
+with 2 items, making the agent loose ❌
 
-The Evolution Algortihm starts with a population of 15 individuals, 3 for each strategy, with probability asscoiated to each strategy equal to 0.5.
+ |
+| |  endgame strategy  ->  | |
+| |                        | |
+the opponent is now in a state in which every
+move he does will result in him loosing ✅
+```
+
+## 3.2 - Evolved rules
+
+TBD
+
+## 3.3 - MinMax
+
+Basic MinMax strategy with _alpha-beta_ pruning and `MAX_DEPTH`
+
+## 3.4 - Reinforcement learning
+
+TBD
+
+---
+
+## Benchmarks
+
+TBD
