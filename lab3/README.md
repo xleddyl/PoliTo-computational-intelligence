@@ -39,18 +39,48 @@ move he does will result in him loosing ✅
 
 ## 3.2 - Evolved rules
 
-TBD
+⚠️ **TBD** ⚠️
 
 ## 3.3 - MinMax
 
-Basic MinMax strategy with _alpha-beta_ pruning and `MAX_DEPTH`
+Basic MinMax strategy with _alpha-beta_ pruning and `MAX_DEPTH` bound
 
 ## 3.4 - Reinforcement learning
 
-TBD
+RL agent trained agains a selected `TEACHER` during _n_ `EPOCHS` with parameters `ALPHA` and `RANDOM_FACTOR`
 
 ---
 
 ## Benchmarks
 
-TBD
+Winrates evaluated with the following parameters:
+
+```py
+# Evaluation
+NIM_SIZE = 5
+K = None
+NUM_MATCHES = 100
+
+# evolved
+...
+
+# minmax
+MAX_DEPTH = 5
+
+# rl
+EPOCHS = 500
+ALPHA = 0.1
+RANDOM_FACTOR = 0.2
+TEACHER = optimal_strategy
+```
+
+|                      | optimal_strategy | random_strategy | fixed_strategy | evolved_strategy | minmax_strategy | rl_strategy |
+| -------------------- | :--------------: | :-------------: | :------------: | :--------------: | :-------------: | :---------: |
+| **optimal_strategy** |        -         |   100% (0.1s)   |  100% (0.1s)   |                  |   100% (8.7s)   |  100% (2m)  |
+| **random_strategy**  |       _0%_       |        -        |   9% (0.1s)    |                  |   2% (14.9s)    |  23% (3m)   |
+| **fixed_strategy**   |       _0%_       |      _91%_      |       -        |                  |   52%(13.8s)    |  23% (2m)   |
+| **evolved_strategy** |                  |                 |                |        -         |                 |             |
+| **minmax_strategy**  |       _0%_       |      _98%_      |     _48%_      |                  |        -        |  63% (4m)   |
+| **rl_strategy**      |       _0%_       |      _77%_      |     _77%_      |                  |      _37%_      |      -      |
+
+Observation: with _minmax_strategy_ and _rl_strategy_ we could have achieved far better results raising `MAX_DEPTH` and `EPOCHS` respectively, at the cost of more execution time
