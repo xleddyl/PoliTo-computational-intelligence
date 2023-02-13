@@ -1,49 +1,40 @@
-# Free for personal or classroom use; see 'LICENSE.md' for details.
-# https://github.com/squillero/computational-intelligence
-
-import logging
-import argparse
-import random
+from players import AgentRandom, AgentXleddyl
 import quarto
+import argparse
+import time
 
+# clear && python3 main.py -m 10
 
-class RandomPlayer(quarto.Player):
-    """Random player"""
-
-    def __init__(self, quarto: quarto.Quarto) -> None:
-        super().__init__(quarto)
-
-    def choose_piece(self) -> int:
-        return random.randint(0, 15)
-
-    def place_piece(self) -> tuple[int, int]:
-        return random.randint(0, 3), random.randint(0, 3)
-
-
-def main():
-    game = quarto.Quarto()
-    game.set_players((RandomPlayer(game), RandomPlayer(game)))
-    winner = game.run()
-    logging.warning(f"main: Winner: player {winner}")
-
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', '--matches', type=int, default=1, help='num of matches')
+args = parser.parse_args()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbose', action='count',
-                        default=0, help='increase log verbosity')
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        dest='verbose',
-                        const=2,
-                        help='log debug messages (same as -vv)')
-    args = parser.parse_args()
+    n_matches = args.matches
+    win = []
+    t = []
+    game = quarto.Quarto(n_matches == 1)
+    players = [AgentXleddyl(game), AgentRandom(game)]
 
-    if args.verbose == 0:
-        logging.getLogger().setLevel(level=logging.WARNING)
-    elif args.verbose == 1:
-        logging.getLogger().setLevel(level=logging.INFO)
-    elif args.verbose == 2:
-        logging.getLogger().setLevel(level=logging.DEBUG)
+    print(f"*** {type(players[0]).__name__} vs {type(players[1]).__name__} over {n_matches} match{'es' if n_matches > 1 else ''} ***\n")
+    for i in range(n_matches):
+        game.reset()
 
-    main()
+        if n_matches > 1:
+            print(f"progress -> {i + 1} / {n_matches}", end="\r")
+
+        start = time.time()
+        turn = i % 2
+        game.set_players((players[turn], players[1 - turn]))
+        winner = game.run()
+        if winner == -1:
+            win.append(winner)
+        else:
+            win.append(winner if i % 2 == 0 else 1 - winner)
+        end = time.time()
+        t.append(end - start)
+    print(f"{type(players[0]).__name__} win rate against {type(players[1]).__name__}: {round((win.count(0)) / len(win) * 100, 2)}%")
+    print('  -  {:15s}   {}'.format(type(players[0]).__name__, win.count(0)))
+    print('  -  {:15s}   {}'.format(type(players[1]).__name__, win.count(1)))
+    print('  -  {:15s}   {}\n'.format('ties', win.count(-1)))
+    print(f"({'avg ' if n_matches > 1 else ''}match time: {round(sum(t) / len(t), 2)}s)")
